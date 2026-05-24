@@ -208,11 +208,19 @@ use `{ FloatingToolbar }` if you'd like to modify the floating version.
 ```tsx
 import { FloatingToolbar, Toolbar } from "@liveblocks/react-lexical";
 import { Icon } from "@liveblocks/react-ui";
-import { Editor } from "@tiptap/react";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { FORMAT_TEXT_COMMAND } from "lexical";
+import { useCallback } from "react";
 
-function CustomToolbar({ editor }: { editor: Editor | null }) {
+function CustomToolbar() {
+  const [editor] = useLexicalComposerContext();
+
+  const handleHighlight = useCallback(() => {
+    editor.dispatchCommand(FORMAT_TEXT_COMMAND, "highlight");
+  }, [editor]);
+
   return (
-    <FloatingToolbar editor={editor}>
+    <FloatingToolbar>
       <Toolbar.SectionHistory />
       <Toolbar.Separator />
       <Toolbar.Button
@@ -221,12 +229,10 @@ function CustomToolbar({ editor }: { editor: Editor | null }) {
         shortcut="CMD-H"
         onClick={() => console.log("help")}
       />
-      <Toolbar.Toggle
+      <Toolbar.Button
         name="Highlight"
         icon={<div>🖊️</div>}
-        active={editor?.isActive("highlight") ?? false}
-        onClick={() => editor?.chain().focus().toggleHighlight().run()}
-        disabled={!editor?.can().chain().focus().toggleHighlight().run()}
+        onClick={handleHighlight}
       />
     </FloatingToolbar>
   );

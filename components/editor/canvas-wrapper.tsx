@@ -19,8 +19,6 @@ import "@xyflow/react/dist/style.css";
 
 const nodeTypes = { canvasNode: CanvasNodeRenderer };
 
-let nodeCounter = 0;
-
 class LiveblocksErrorBoundary extends Component<
   { children: ReactNode },
   { error: string | null }
@@ -68,7 +66,7 @@ function CanvasInner() {
       }
 
       const position = screenToFlowPosition({ x: e.clientX, y: e.clientY });
-      const id = `${payload.shape}-${Date.now()}-${++nodeCounter}`;
+      const id = `${payload.shape}-${crypto.randomUUID()}`;
 
       const newNode: CanvasNode = {
         id,

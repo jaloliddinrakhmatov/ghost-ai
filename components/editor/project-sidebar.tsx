@@ -197,8 +197,11 @@ export function ProjectSidebar({
 
   return (
     <div
+      aria-hidden={!isOpen}
       className={`absolute top-3 left-3 bottom-3 z-30 w-64 transition-transform duration-200 ease-in-out ${
-        isOpen ? "translate-x-0" : "-translate-x-[calc(100%+12px)]"
+        isOpen
+          ? "translate-x-0 visible"
+          : "-translate-x-[calc(100%+12px)] invisible pointer-events-none"
       }`}
     >
       <aside className="flex flex-col h-full bg-bg-surface/95 backdrop-blur-sm border border-white/6 rounded-2xl shadow-2xl overflow-hidden">

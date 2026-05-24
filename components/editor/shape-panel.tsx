@@ -116,6 +116,7 @@ export function ShapePanel() {
           onDragStart={(e) => handleDragStart(e, config)}
           onMouseDown={(e) => e.stopPropagation()}
           title={config.label}
+          aria-label={`Drag ${config.label} shape`}
           className="flex items-center justify-center w-8 h-8 rounded-full text-text-muted hover:text-text-default hover:bg-bg-subtle transition-colors cursor-grab active:cursor-grabbing"
         >
           {config.icon}

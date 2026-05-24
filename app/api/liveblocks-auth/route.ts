@@ -27,9 +27,19 @@ export async function POST(req: NextRequest) {
   // Ensure the room exists, create only if needed
   const lb = getLiveblocks();
 
-  await lb.getRoom(roomId).catch(async () => {
-    await lb.createRoom(roomId, { defaultAccesses: [] });
-  });
+  try {
+    await lb.getRoom(roomId);
+  } catch (error: unknown) {
+    const status =
+      typeof error === "object" && error !== null && "status" in error
+        ? (error as { status?: number }).status
+        : undefined;
+    if (status === 404) {
+      await lb.createRoom(roomId, { defaultAccesses: [] });
+    } else {
+      throw error;
+    }
+  }
 
   const name =
     user.fullName ??

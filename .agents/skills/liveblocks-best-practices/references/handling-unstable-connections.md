@@ -14,6 +14,7 @@ inside of
 
 ```tsx
 import { toast } from "my-preferred-toast-library";
+import { useLostConnectionListener } from "@liveblocks/react/suspense";
 
 function App() {
   useLostConnectionListener((event) => {
