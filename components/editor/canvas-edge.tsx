@@ -60,12 +60,18 @@ function CanvasEdgeComponent({
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       e.stopPropagation();
-      if (e.key === "Enter" || e.key === "Escape") {
-        if (e.key === "Escape") setDraft(data?.label ?? "");
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setEditing(false);
+        dispatchLabelUpdate(data?.label ?? "");
+        return;
+      }
+      if (e.key === "Enter") {
+        e.preventDefault();
         commit();
       }
     },
-    [commit, data?.label]
+    [commit, data?.label, dispatchLabelUpdate]
   );
 
   const savedLabel = data?.label;

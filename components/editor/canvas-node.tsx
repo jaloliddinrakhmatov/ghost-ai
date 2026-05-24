@@ -130,7 +130,7 @@ function LabelOverlay({ label, shape, onCommit }: LabelEditorProps) {
         onMouseDown={(e) => e.stopPropagation()}
         onPointerDown={(e) => e.stopPropagation()}
         placeholder={shape}
-        className="w-full resize-none bg-transparent text-sm text-text-default text-center outline-none border-none px-2 py-0"
+        className="w-full resize-none bg-transparent text-sm text-text-primary text-center outline-none border-none px-2 py-0"
         style={{ fontFamily: "inherit", overflow: "hidden" }}
       />
     </div>
@@ -216,7 +216,7 @@ function CanvasNodeComponent({ id, data, selected, width, height }: NodeProps<Ca
   const isSvgShape = shape === "diamond" || shape === "hexagon" || shape === "cylinder";
   const [editing, setEditing] = useState(false);
   const nodeBg = data.color ?? BG;
-  const nodeText = data.textColor ?? "var(--color-text-default)";
+  const nodeText = data.textColor ?? "var(--color-text-primary)";
 
   const handleDoubleClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
