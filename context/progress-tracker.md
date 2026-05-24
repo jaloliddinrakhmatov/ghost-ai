@@ -14,14 +14,17 @@ Update this file whenever the current phase, active feature, or implementation s
 
 - `01-design-system`: shadcn/ui initialized with Tailwind v4, lucide-react installed, all 7 UI components added (Button, Card, Dialog, Input, Tabs, Textarea, ScrollArea), `lib/utils.ts` with `cn()` created, `globals.css` updated with dark-only theme mapping project design tokens to shadcn variables.
 - `02-editor`: `EditorNavbar` (fixed top bar, sidebar toggle with PanelLeftOpen/PanelLeftClose) and `ProjectSidebar` (floating overlay, slides in from left, Tabs for My Projects/Shared, New Project button) created in `components/editor/`.
+- `05-prisma`: `prisma/models/project.prisma` with `Project` and `ProjectCollaborator` models (indexes, cascade delete, unique constraints). `lib/prisma.ts` singleton branching on Accelerate vs direct pg adapter. Migration `20260524064520_init` applied, client generated to `app/generated/prisma/`.
+- `04-project-dialogs`: Editor home screen with heading + New Project CTA. `useProjectDialogs` hook managing dialog/form/loading state with mock data. Create (with live slug preview), Rename (prefilled + auto-focus + Enter submit), and Delete (destructive) dialogs. Sidebar updated with per-project rename/delete actions shown only for owned projects, plus mobile backdrop scrim.
+- `03-auth`: Clerk wired in — `ClerkProvider` with `dark` theme wraps root layout, CSS variable overrides applied via `appearance.variables`. `proxy.ts` at project root (Next.js 16 renamed `middleware.ts`) with `clerkMiddleware` protecting all routes except `/sign-in` and `/sign-up`. Sign-in and sign-up pages use two-panel layout (logo + tagline on left for lg screens, Clerk form on right). `/` redirects authenticated users to `/editor` and unauthenticated users to `/sign-in`. `UserButton` added to editor navbar right section. `@clerk/ui` installed for theme import.
 
 ## In Progress
 
-- None yet.
+- None.
 
 ## Next Up
 
-- `03-*`: Next feature unit TBD.
+- `06-*`: Next feature unit TBD.
 
 ## Open Questions
 
