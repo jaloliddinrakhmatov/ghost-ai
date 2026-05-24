@@ -1,7 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(node -e \"const raw = process.env.DATABASE_URL; if (!raw) { process.exit(1); } const u = new URL(raw); console.log(u.searchParams.get('sslmode') || u.searchParams.get('ssl'))\")"
+      "Bash(node -e \"const u = new URL\\(process.env.DATABASE_URL\\); console.log\\(u.searchParams.get\\('sslmode'\\) || u.searchParams.get\\('ssl'\\)\\)\")",
+      "Bash(mkdir -p ./app/editor/\\\\[roomId\\\\])",
+      "Bash(mkdir -p ./app/api/projects/\\\\[projectId\\\\]/collaborators/\\\\[email\\\\])"
+    ],
+    "additionalDirectories": [
+      "./app/editor",
+      "./app/api/projects/[projectId]/collaborators"
     ]
   }
 }

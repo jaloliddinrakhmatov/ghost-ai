@@ -16,9 +16,10 @@ import type { ProjectData } from "@/lib/projects";
 interface Props {
   owned: ProjectData[];
   shared: ProjectData[];
+  userInitial: string;
 }
 
-export function EditorHomeClient({ owned, shared }: Props) {
+export function EditorHomeClient({ owned, shared, userInitial }: Props) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const actions = useProjectActions();
 
@@ -34,12 +35,13 @@ export function EditorHomeClient({ owned, shared }: Props) {
         onClose={() => setSidebarOpen(false)}
         owned={owned}
         shared={shared}
+        userInitial={userInitial}
         onCreateProject={actions.openCreate}
         onRenameProject={actions.openRename}
         onDeleteProject={actions.openDelete}
       />
 
-      <main className="flex-1 mt-12 flex flex-col items-center justify-center gap-4">
+      <main className="flex-1 mt-14 flex flex-col items-center justify-center gap-4">
         <h1 className="text-xl font-semibold text-text-primary text-center">
           Create a project or open an existing one
         </h1>
@@ -69,12 +71,14 @@ export function EditorHomeClient({ owned, shared }: Props) {
         formName={actions.formName}
         setFormName={actions.setFormName}
         loading={actions.loading}
+        renameError={actions.renameError}
         close={actions.close}
         submitRename={actions.submitRename}
       />
       <DeleteProjectDialog
         dialog={actions.dialog}
         loading={actions.loading}
+        deleteError={actions.deleteError}
         close={actions.close}
         submitDelete={actions.submitDelete}
       />
