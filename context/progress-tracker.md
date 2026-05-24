@@ -24,9 +24,13 @@ Update this file whenever the current phase, active feature, or implementation s
 
 - None.
 
+- `09-share-dialog`: `ShareDialog` component with owner/collaborator role-based views. `GET/POST /api/projects/[projectId]/collaborators` routes (list + invite), `DELETE /api/projects/[projectId]/collaborators/[email]` (remove). Clerk Backend API enriches emails with display name and avatar; falls back to email-only. `WorkspaceClient` updated with `isOwner` prop and share state. Workspace server page derives and passes `isOwner`.
+
+- `08-editor-workspace-shell`: `app/editor/[roomId]/page.tsx` server component with access checks — unauthenticated redirects to `/sign-in`, missing/unauthorized shows `AccessDenied`. `lib/project-access.ts` with `getClerkIdentity()` and `getProjectWithAccess()` (owner or collaborator by primary email). `AccessDenied` component: centered lock icon + message + link back to `/editor`. `EditorNavbar` extended with optional `projectName`, `onShare`, `isAiOpen`, `onAiToggle` props. `ProjectSidebar` extended with `activeProjectId` to highlight current room. `WorkspaceClient` client shell: sidebar toggle, AI sidebar placeholder (slide-in right panel), canvas placeholder. `EditorHomeClient` passes `owned`/`shared` from server; workspace fetches both independently.
+
 ## Next Up
 
-- `08-*`: Next feature unit TBD.
+- `10-*`: Next feature unit TBD.
 
 ## Open Questions
 

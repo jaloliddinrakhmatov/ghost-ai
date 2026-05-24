@@ -1,7 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(node -e \"const raw = process.env.DATABASE_URL; if (!raw) { process.exit(1); } const u = new URL(raw); console.log(u.searchParams.get('sslmode') || u.searchParams.get('ssl'))\")"
+      "Bash(node -e \"const u = new URL\\(process.env.DATABASE_URL\\); console.log\\(u.searchParams.get\\('sslmode'\\) || u.searchParams.get\\('ssl'\\)\\)\")",
+      "Bash(mkdir -p /Users/ravshan/Desktop/ghost-ai/app/editor/\\\\[roomId\\\\])",
+      "Bash(mkdir -p /Users/ravshan/Desktop/ghost-ai/app/api/projects/\\\\[projectId\\\\]/collaborators/\\\\[email\\\\])"
+    ],
+    "additionalDirectories": [
+      "/Users/ravshan/Desktop/ghost-ai/app/editor",
+      "/Users/ravshan/Desktop/ghost-ai/app/api/projects/[projectId]/collaborators"
     ]
   }
 }
