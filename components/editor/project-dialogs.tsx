@@ -79,9 +79,13 @@ export function RenameProjectDialog({
   formName,
   setFormName,
   loading,
+  renameError,
   close,
   submitRename,
-}: Pick<ActionsProps, "dialog" | "formName" | "setFormName" | "loading" | "close" | "submitRename">) {
+}: Pick<
+  ActionsProps,
+  "dialog" | "formName" | "setFormName" | "loading" | "renameError" | "close" | "submitRename"
+>) {
   const open = dialog.type === "rename";
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -103,7 +107,7 @@ export function RenameProjectDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="py-2">
+        <div className="space-y-2 py-2">
           <Input
             ref={inputRef}
             placeholder="New name"
@@ -112,6 +116,9 @@ export function RenameProjectDialog({
             onKeyDown={(e) => e.key === "Enter" && !loading && submitRename()}
             className="bg-bg-subtle border-border-default text-text-primary placeholder:text-text-faint"
           />
+          {renameError && (
+            <p className="text-sm text-state-error">{renameError}</p>
+          )}
         </div>
 
         <DialogFooter>
@@ -138,9 +145,10 @@ export function RenameProjectDialog({
 export function DeleteProjectDialog({
   dialog,
   loading,
+  deleteError,
   close,
   submitDelete,
-}: Pick<ActionsProps, "dialog" | "loading" | "close" | "submitDelete">) {
+}: Pick<ActionsProps, "dialog" | "loading" | "deleteError" | "close" | "submitDelete">) {
   const open = dialog.type === "delete";
 
   return (
@@ -156,6 +164,10 @@ export function DeleteProjectDialog({
             ? This cannot be undone.
           </DialogDescription>
         </DialogHeader>
+
+        {deleteError && (
+          <p className="text-sm text-state-error">{deleteError}</p>
+        )}
 
         <DialogFooter>
           <Button

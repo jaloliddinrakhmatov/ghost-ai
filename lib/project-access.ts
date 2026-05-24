@@ -7,7 +7,7 @@ export async function getClerkIdentity() {
   const user = await currentUser();
   return {
     userId,
-    email: user?.primaryEmailAddress?.emailAddress ?? null,
+    email: user?.primaryEmailAddress?.emailAddress?.toLowerCase() ?? null,
   };
 }
 

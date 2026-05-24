@@ -105,10 +105,11 @@ export function ShareDialog({ open, onClose, projectId, isOwner }: ShareDialogPr
   async function handleRemove(email: string) {
     setRemovingEmail(email);
     try {
-      await fetch(
+      const res = await fetch(
         `/api/projects/${projectId}/collaborators/${encodeURIComponent(email)}`,
         { method: "DELETE" }
       );
+      if (!res.ok) return;
       setPeople((prev) => prev.filter((p) => p.email !== email));
     } finally {
       setRemovingEmail(null);
@@ -117,9 +118,13 @@ export function ShareDialog({ open, onClose, projectId, isOwner }: ShareDialogPr
 
   async function handleCopyLink() {
     const url = `${window.location.origin}/editor/${projectId}`;
-    await navigator.clipboard.writeText(url);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // clipboard unavailable — silently ignore
+    }
   }
 
   return (

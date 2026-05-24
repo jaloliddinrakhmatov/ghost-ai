@@ -182,4 +182,4 @@ May require manual refinement since MongoDB is schemaless.
 `db pull` overwrites your schema file. Always:
 - Commit current schema before pulling
 - Use `--print` to preview first
-- Backup customizations you want to keep
+- Back up customizations you want to keep

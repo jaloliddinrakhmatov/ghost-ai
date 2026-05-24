@@ -71,12 +71,14 @@ export function EditorHomeClient({ owned, shared, userInitial }: Props) {
         formName={actions.formName}
         setFormName={actions.setFormName}
         loading={actions.loading}
+        renameError={actions.renameError}
         close={actions.close}
         submitRename={actions.submitRename}
       />
       <DeleteProjectDialog
         dialog={actions.dialog}
         loading={actions.loading}
+        deleteError={actions.deleteError}
         close={actions.close}
         submitDelete={actions.submitDelete}
       />

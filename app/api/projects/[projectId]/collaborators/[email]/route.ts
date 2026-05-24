@@ -11,7 +11,12 @@ export async function DELETE(_req: NextRequest, { params }: RouteParams) {
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { projectId, email } = await params;
-  const decodedEmail = decodeURIComponent(email).toLowerCase();
+  let decodedEmail: string;
+  try {
+    decodedEmail = decodeURIComponent(email).toLowerCase();
+  } catch {
+    return NextResponse.json({ error: "Invalid email path parameter" }, { status: 400 });
+  }
 
   const project = await prisma.project.findUnique({ where: { id: projectId } });
   if (!project) return NextResponse.json({ error: "Not found" }, { status: 404 });

@@ -43,7 +43,7 @@ export async function GET(_req: NextRequest, { params }: RouteParams) {
 
   if (project.ownerId !== userId) {
     const user = await currentUser();
-    const email = user?.primaryEmailAddress?.emailAddress;
+    const email = user?.primaryEmailAddress?.emailAddress?.toLowerCase();
     if (!email) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     const isCollaborator = await prisma.projectCollaborator.findUnique({
       where: { projectId_email: { projectId, email } },
@@ -57,7 +57,7 @@ export async function GET(_req: NextRequest, { params }: RouteParams) {
   const ownerEmail =
     ownerClerk?.primaryEmailAddress?.emailAddress ??
     ownerClerk?.emailAddresses?.[0]?.emailAddress ??
-    "";
+    "deleted-user@unknown.local";
 
   const ownerPerson: EnrichedPerson = {
     email: ownerEmail,

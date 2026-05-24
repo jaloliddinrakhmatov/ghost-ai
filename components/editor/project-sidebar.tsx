@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { X, Plus, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -22,16 +23,22 @@ interface ProjectSidebarProps {
 function ProjectItem({
   project,
   active,
+  onOpen,
   onRename,
   onDelete,
 }: {
   project: ProjectData;
   active?: boolean;
+  onOpen: () => void;
   onRename: () => void;
   onDelete: () => void;
 }) {
   return (
     <div
+      role="button"
+      tabIndex={0}
+      onClick={onOpen}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(); } }}
       className={`group flex items-center gap-2 px-3 py-2 rounded-xl cursor-pointer transition-colors ${
         active ? "bg-bg-elevated" : "hover:bg-bg-elevated"
       }`}
@@ -84,6 +91,7 @@ function SidebarContent({
   onRenameProject,
   onDeleteProject,
 }: Omit<ProjectSidebarProps, "isOpen" | "inline">) {
+  const router = useRouter();
   return (
     <>
       <div className="flex items-center justify-between px-4 py-4 shrink-0">
@@ -118,6 +126,7 @@ function SidebarContent({
                     key={p.id}
                     project={p}
                     active={p.id === activeProjectId}
+                    onOpen={() => router.push(`/editor/${p.id}`)}
                     onRename={() => onRenameProject(p)}
                     onDelete={() => onDeleteProject(p)}
                   />
@@ -140,6 +149,7 @@ function SidebarContent({
                     key={p.id}
                     project={p}
                     active={p.id === activeProjectId}
+                    onOpen={() => router.push(`/editor/${p.id}`)}
                     onRename={() => onRenameProject(p)}
                     onDelete={() => onDeleteProject(p)}
                   />
