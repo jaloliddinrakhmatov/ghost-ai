@@ -11,26 +11,19 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { useProjectDialogs } from "@/hooks/use-project-dialogs";
+import type { useProjectActions } from "@/hooks/use-project-actions";
 
-type DialogsProps = ReturnType<typeof useProjectDialogs>;
-
-function toSlug(name: string) {
-  return name
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-}
+type ActionsProps = ReturnType<typeof useProjectActions>;
 
 export function CreateProjectDialog({
   dialog,
   formName,
   setFormName,
+  roomIdPreview,
   loading,
   close,
   submitCreate,
-}: Pick<DialogsProps, "dialog" | "formName" | "setFormName" | "loading" | "close" | "submitCreate">) {
+}: Pick<ActionsProps, "dialog" | "formName" | "setFormName" | "roomIdPreview" | "loading" | "close" | "submitCreate">) {
   const open = dialog.type === "create";
 
   return (
@@ -52,12 +45,10 @@ export function CreateProjectDialog({
             autoFocus
             className="bg-bg-subtle border-border-default text-text-primary placeholder:text-text-faint"
           />
-          {formName.trim() && (
+          {roomIdPreview && (
             <p className="text-xs text-text-muted">
-              Slug:{" "}
-              <span className="text-text-secondary font-mono">
-                {toSlug(formName)}
-              </span>
+              Room ID:{" "}
+              <span className="text-text-secondary font-mono">{roomIdPreview}</span>
             </p>
           )}
         </div>
@@ -90,7 +81,7 @@ export function RenameProjectDialog({
   loading,
   close,
   submitRename,
-}: Pick<DialogsProps, "dialog" | "formName" | "setFormName" | "loading" | "close" | "submitRename">) {
+}: Pick<ActionsProps, "dialog" | "formName" | "setFormName" | "loading" | "close" | "submitRename">) {
   const open = dialog.type === "rename";
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -149,7 +140,7 @@ export function DeleteProjectDialog({
   loading,
   close,
   submitDelete,
-}: Pick<DialogsProps, "dialog" | "loading" | "close" | "submitDelete">) {
+}: Pick<ActionsProps, "dialog" | "loading" | "close" | "submitDelete">) {
   const open = dialog.type === "delete";
 
   return (
