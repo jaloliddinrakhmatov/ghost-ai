@@ -141,3 +141,27 @@
     border-radius: 0 !important;
     box-shadow: none !important;
 }
+
+/* Show connection handles on node hover */
+.react-flow__node:hover .react-flow__handle {
+    opacity: 1 !important;
+}
+.react-flow__node.selected .react-flow__handle {
+    opacity: 1 !important;
+}
+
+/* Custom edge: widen hit area without thickening visible stroke */
+.react-flow__edge-interaction {
+    stroke-width: 16 !important;
+}
+.react-flow__edge .react-flow__edge-path {
+    stroke-width: 1.5;
+    stroke: var(--color-border-default);
+    opacity: 0.6;
+    transition: opacity 0.15s, stroke 0.15s;
+}
+.react-flow__edge:hover .react-flow__edge-path,
+.react-flow__edge.selected .react-flow__edge-path {
+    opacity: 1;
+    stroke: var(--color-accent-primary);
+}

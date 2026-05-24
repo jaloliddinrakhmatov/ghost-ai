@@ -11,7 +11,9 @@ import {
   DeleteProjectDialog,
 } from "@/components/editor/project-dialogs";
 import { ShareDialog } from "@/components/editor/share-dialog";
+import { StarterTemplatesModal } from "@/components/editor/starter-templates-modal";
 import { useProjectActions } from "@/hooks/use-project-actions";
+import type { CanvasTemplate } from "@/components/editor/starter-templates";
 import type { ProjectData } from "@/lib/projects";
 
 interface WorkspaceClientProps {
@@ -34,6 +36,11 @@ export function WorkspaceClient({
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [aiOpen, setAiOpen] = useState(true);
   const [shareOpen, setShareOpen] = useState(false);
+  const [templatesOpen, setTemplatesOpen] = useState(false);
+
+  function handleImportTemplate(template: CanvasTemplate) {
+    document.dispatchEvent(new CustomEvent("canvas:load-template", { detail: template }));
+  }
   const actions = useProjectActions();
 
   return (
@@ -45,6 +52,7 @@ export function WorkspaceClient({
         onShare={() => setShareOpen(true)}
         isAiOpen={aiOpen}
         onAiToggle={() => setAiOpen((v) => !v)}
+        onTemplates={() => setTemplatesOpen(true)}
       />
 
       {/* Body: canvas fills full space below navbar, sidebars float over it */}
@@ -109,6 +117,12 @@ export function WorkspaceClient({
           </aside>
         </div>
       </div>
+
+      <StarterTemplatesModal
+        open={templatesOpen}
+        onClose={() => setTemplatesOpen(false)}
+        onImport={handleImportTemplate}
+      />
 
       {shareOpen && (
         <ShareDialog
