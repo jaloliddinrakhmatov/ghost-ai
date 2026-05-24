@@ -126,3 +126,18 @@
         @apply font-sans;
     }
 }
+
+/* ReactFlow canvas overrides — remove default card/floating effect */
+.react-flow {
+    background: transparent !important;
+}
+.react-flow__renderer,
+.react-flow__container,
+.react-flow__pane {
+    background: transparent !important;
+}
+.react-flow__viewport {
+    /* ensure no border-radius or shadow bleeds through */
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}

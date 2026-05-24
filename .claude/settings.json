@@ -3,7 +3,15 @@
     "allow": [
       "Bash(node -e \"const u = new URL\\(process.env.DATABASE_URL\\); console.log\\(u.searchParams.get\\('sslmode'\\) || u.searchParams.get\\('ssl'\\)\\)\")",
       "Bash(mkdir -p ./app/editor/\\\\[roomId\\\\])",
-      "Bash(mkdir -p ./app/api/projects/\\\\[projectId\\\\]/collaborators/\\\\[email\\\\])"
+      "Bash(mkdir -p ./app/api/projects/\\\\[projectId\\\\]/collaborators/\\\\[email\\\\])",
+      "Bash(npm show *)",
+      "Bash(node -e \"const m = require\\('@liveblocks/react-flow'\\); console.log\\(Object.keys\\(m\\)\\)\")",
+      "Bash(node -e \"const m = require\\('@liveblocks/react'\\); console.log\\(Object.keys\\(m\\).filter\\(k => k.includes\\('Provider'\\) || k.includes\\('Room'\\) || k.includes\\('Suspense'\\)\\)\\)\")",
+      "Bash(node -e \"const m = require\\('@liveblocks/react-flow'\\); const f = m.useLiveblocksFlow; console.log\\(f.toString\\(\\).slice\\(0, 500\\)\\)\")",
+      "Bash(node -e \"const m = require\\('@liveblocks/client'\\); console.log\\(Object.keys\\(m\\).filter\\(k => k.includes\\('Liveblock'\\) || k.includes\\('create'\\)\\)\\)\")",
+      "Bash(node -e \"const m = require\\('@liveblocks/react-flow'\\); const f = m.useLiveblocksFlow; console.log\\(f.toString\\(\\).slice\\(500, 1500\\)\\)\")",
+      "Bash(node -e \"const m = require\\('@liveblocks/react-flow/dist/index.cjs'\\); console.log\\(Object.keys\\(m\\)\\)\")",
+      "Bash(node -e \"const m = require\\('@liveblocks/react/dist/index.cjs'\\); const f = m.ClientSideSuspense; console.log\\(f?.toString\\(\\).slice\\(0,200\\)\\)\")"
     ],
     "additionalDirectories": [
       "./app/editor",

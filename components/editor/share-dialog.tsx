@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Mail, Link2, Loader2, X } from "lucide-react";
 import {
   Dialog,
@@ -19,7 +19,6 @@ interface Person {
 }
 
 interface ShareDialogProps {
-  open: boolean;
   onClose: () => void;
   projectId: string;
   isOwner: boolean;
@@ -45,32 +44,30 @@ function Avatar({ person }: { person: Person }) {
   );
 }
 
-export function ShareDialog({ open, onClose, projectId, isOwner }: ShareDialogProps) {
+export function ShareDialog({ onClose, projectId, isOwner }: ShareDialogProps) {
+  // loading starts true — component only mounts when dialog opens, so fetch begins immediately
   const [people, setPeople] = useState<Person[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviting, setInviting] = useState(false);
   const [inviteError, setInviteError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [removingEmail, setRemovingEmail] = useState<string | null>(null);
 
-  const fetchPeople = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/projects/${projectId}/collaborators`);
-      if (res.ok) setPeople(await res.json());
-    } finally {
-      setLoading(false);
-    }
-  }, [projectId]);
-
   useEffect(() => {
-    if (open) {
-      fetchPeople();
-      setInviteEmail("");
-      setInviteError(null);
-    }
-  }, [open, fetchPeople]);
+    let cancelled = false;
+
+    fetch(`/api/projects/${projectId}/collaborators`)
+      .then(async (res) => {
+        if (res.ok && !cancelled) setPeople(await res.json());
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => { cancelled = true; };
+  }, [projectId]);
 
   async function handleInvite() {
     const email = inviteEmail.trim().toLowerCase();
@@ -128,7 +125,7 @@ export function ShareDialog({ open, onClose, projectId, isOwner }: ShareDialogPr
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+    <Dialog open onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-lg rounded-2xl bg-[#12121a] border border-white/8 p-0 gap-0">
         {/* Header */}
         <DialogHeader className="px-6 pt-6 pb-5">
