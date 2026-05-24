@@ -22,7 +22,6 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Completed (continued)
 
-- `12-shape-panel`: Floating pill toolbar at bottom-center of canvas with 6 draggable shape buttons (rectangle, diamond, circle, pill, cylinder, hexagon). Drag payload carries shape name and default dimensions. `CanvasWrapper` handles `dragover`/`drop` via ReactFlow props — drops convert screen coords to flow coords via `screenToFlowPosition` and create `canvasNode` nodes with ID format `${shape}-${timestamp}-${counter}`. `CanvasNodeRenderer` (memoized) renders all shapes as bordered rectangles with centered label. `ReactFlowProvider` wraps `CanvasInner` so `useReactFlow` is available. `NodeData.shape` extended with all 6 shape values.
 - `11-base-canvas`: `CanvasWrapper` client component in `components/editor/canvas-wrapper.tsx` — `LiveblocksProvider` (auth via `/api/liveblocks-auth`) + `RoomProvider` (room ID = project ID, initial presence `cursor: null, isThinking: false`) + `ClientSideSuspense` with loading state + `LiveblocksErrorBoundary`. `Canvas` inner component uses `useLiveblocksFlow<CanvasNode, CanvasEdge>({ suspense: true })` and renders `ReactFlow` with `MiniMap` and dot-pattern `Background`. Shared types in `types/canvas.ts` — `NodeData` (label, color, shape), `CanvasNode`, `CanvasEdge`. `WorkspaceClient` canvas placeholder replaced with `<CanvasWrapper roomId={projectId} />`.
 - `10-liveblocks-setup`: `liveblocks.config.ts` defines `Presence` (cursor position + `isThinking`) and `UserMeta` (id, name, avatar, color). `lib/liveblocks.ts` — cached `Liveblocks` node client + `cursorColorForUser` (deterministic palette mapping). `POST /api/liveblocks-auth` — requires Clerk auth, verifies project access via `getProjectWithAccess`, ensures room exists (create-if-needed), returns session token with name/avatar/color. `@liveblocks/node@3.19.3` installed.
 - `09-share-dialog`: `ShareDialog` component with owner/collaborator role-based views. `GET/POST /api/projects/[projectId]/collaborators` routes (list + invite), `DELETE /api/projects/[projectId]/collaborators/[email]` (remove). Clerk Backend API enriches emails with display name and avatar; owner shown first with OWNER badge. `WorkspaceClient` updated with `isOwner` prop and share state. Workspace server page derives and passes `isOwner`.
@@ -34,7 +33,7 @@ None.
 
 ## Next Up
 
-- `13-*`: Next feature unit TBD.
+- `12-*`: Next feature unit TBD.
 
 ## Open Questions
 

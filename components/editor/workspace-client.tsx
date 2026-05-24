@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Compass, Bot, Sparkles } from "lucide-react";
+import { Bot, Sparkles } from "lucide-react";
+import { CanvasWrapper } from "@/components/editor/canvas-wrapper";
 import { EditorNavbar } from "@/components/editor/editor-navbar";
 import { ProjectSidebar } from "@/components/editor/project-sidebar";
 import {
@@ -36,7 +37,7 @@ export function WorkspaceClient({
   const actions = useProjectActions();
 
   return (
-    <div className="h-screen flex flex-col bg-bg-base overflow-hidden">
+    <div className="h-screen bg-bg-base overflow-hidden">
       <EditorNavbar
         isSidebarOpen={sidebarOpen}
         onSidebarToggle={() => setSidebarOpen((v) => !v)}
@@ -46,10 +47,15 @@ export function WorkspaceClient({
         onAiToggle={() => setAiOpen((v) => !v)}
       />
 
-      {/* Body: sidebar + canvas + AI panel */}
-      <div className="flex flex-1 mt-14 overflow-hidden">
+      {/* Body: canvas fills full space below navbar, sidebars float over it */}
+      <div className="absolute inset-0 top-14 overflow-hidden">
+        {/* Canvas fills the entire area edge-to-edge */}
+        <main className="absolute inset-0 bg-bg-base">
+          <CanvasWrapper roomId={projectId} />
+        </main>
+
+        {/* Left sidebar — floats over canvas, fully off-screen when closed */}
         <ProjectSidebar
-          inline
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
           owned={owned}
@@ -61,40 +67,14 @@ export function WorkspaceClient({
           onDeleteProject={actions.openDelete}
         />
 
-        {/* Canvas placeholder — fills remaining space */}
-        <main className="flex-1 p-3 overflow-hidden bg-bg-base">
-          <div
-            className="h-full w-full rounded-2xl border border-border-default/40 flex items-center justify-center"
-            style={{
-              background:
-                "radial-gradient(ellipse at 50% 40%, #16161f 0%, #0a0a0d 70%)",
-            }}
-          >
-            <div className="flex flex-col items-center gap-6 text-center max-w-lg px-8">
-              <div className="w-14 h-14 rounded-full border border-accent-primary/30 bg-accent-primary/10 flex items-center justify-center">
-                <Compass className="h-6 w-6 text-accent-primary" />
-              </div>
-              <div className="space-y-3">
-                <p className="text-xs tracking-[0.2em] uppercase text-text-faint font-medium">
-                  Workspace Shell
-                </p>
-                <h2 className="text-2xl font-semibold text-text-primary leading-snug">
-                  Canvas and collaboration tooling land here next.
-                </h2>
-                <p className="text-sm text-text-muted leading-relaxed">
-                  This room is ready for the shared architecture canvas, durable AI
-                  workflows, and real-time presence. For now, the shell is wired
-                  with project context and navigation only.
-                </p>
-              </div>
-            </div>
-          </div>
-        </main>
-
-        {/* AI sidebar */}
-        {aiOpen && (
-          <aside className="w-80 shrink-0 flex flex-col bg-bg-surface border-l border-border-default">
-            <div className="flex items-start justify-between px-4 py-4 border-b border-border-default shrink-0">
+        {/* AI sidebar — floating panel, right side */}
+        <div
+          className={`absolute top-3 right-3 bottom-3 z-30 w-[300px] transition-transform duration-200 ease-in-out ${
+            aiOpen ? "translate-x-0" : "translate-x-[calc(100%+12px)]"
+          }`}
+        >
+          <aside className="flex flex-col h-full bg-bg-surface/95 backdrop-blur-sm border border-white/6 rounded-2xl shadow-2xl overflow-hidden">
+            <div className="flex items-start justify-between px-5 py-5 shrink-0">
               <div>
                 <p className="text-sm font-semibold text-text-primary">AI Copilot</p>
                 <p className="text-xs text-text-muted mt-0.5">Placeholder panel</p>
@@ -102,8 +82,8 @@ export function WorkspaceClient({
               <Sparkles className="h-4 w-4 text-accent-ai mt-0.5 shrink-0" />
             </div>
 
-            <div className="flex-1 p-3 overflow-y-auto">
-              <div className="rounded-xl bg-bg-elevated border border-border-default p-3 flex gap-3">
+            <div className="flex-1 px-3 pb-3 overflow-y-auto space-y-2">
+              <div className="rounded-xl bg-bg-elevated/60 border border-white/5 p-4 flex gap-3">
                 <div className="w-8 h-8 rounded-lg bg-accent-ai/10 flex items-center justify-center shrink-0">
                   <Bot className="h-4 w-4 text-accent-ai-text" />
                 </div>
@@ -116,9 +96,9 @@ export function WorkspaceClient({
               </div>
             </div>
 
-            <div className="p-3 border-t border-border-default shrink-0">
-              <div className="rounded-xl bg-bg-elevated border border-border-default p-3">
-                <p className="text-xs tracking-[0.15em] uppercase text-text-faint font-medium mb-1.5">
+            <div className="px-3 pb-3 shrink-0">
+              <div className="rounded-xl bg-bg-elevated/60 border border-white/5 p-4">
+                <p className="text-xs tracking-[0.15em] uppercase text-text-faint font-medium mb-2">
                   Future Hooks
                 </p>
                 <p className="text-xs text-text-muted leading-relaxed">
@@ -127,15 +107,16 @@ export function WorkspaceClient({
               </div>
             </div>
           </aside>
-        )}
+        </div>
       </div>
 
-      <ShareDialog
-        open={shareOpen}
-        onClose={() => setShareOpen(false)}
-        projectId={projectId}
-        isOwner={isOwner}
-      />
+      {shareOpen && (
+        <ShareDialog
+          onClose={() => setShareOpen(false)}
+          projectId={projectId}
+          isOwner={isOwner}
+        />
+      )}
 
       <CreateProjectDialog
         dialog={actions.dialog}
