@@ -13,6 +13,7 @@ Update this file whenever the current phase, active feature, or implementation s
 ## Completed
 
 - `01-design-system`: shadcn/ui initialized with Tailwind v4, lucide-react installed, all 7 UI components added (Button, Card, Dialog, Input, Tabs, Textarea, ScrollArea), `lib/utils.ts` with `cn()` created, `globals.css` updated with dark-only theme mapping project design tokens to shadcn variables.
+- `02-editor`: `EditorNavbar` (fixed top bar, sidebar toggle with PanelLeftOpen/PanelLeftClose) and `ProjectSidebar` (floating overlay, slides in from left, Tabs for My Projects/Shared, New Project button) created in `components/editor/`.
 
 ## In Progress
 
@@ -20,7 +21,7 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Next Up
 
-- Add the next planned feature unit here.
+- `03-*`: Next feature unit TBD.
 
 ## Open Questions
 
