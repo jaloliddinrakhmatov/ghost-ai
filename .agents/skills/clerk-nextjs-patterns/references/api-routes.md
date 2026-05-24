@@ -27,7 +27,7 @@ export async function DELETE(req: Request) {
   const { isAuthenticated, has } = await auth();
   if (!isAuthenticated) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const isAdmin = await has({ role: 'org:admin' });
+  const isAdmin = has({ role: 'org:admin' });
   if (!isAdmin) return Response.json({ error: 'Forbidden' }, { status: 403 });
 
   return Response.json({ success: true });
@@ -37,7 +37,8 @@ export async function DELETE(req: Request) {
 ## Org Route Protection
 
 ```typescript
-export async function GET(req: Request, { params }: { params: { orgId: string } }) {
+export async function GET(req: Request, props: { params: Promise<{ orgId: string }> }) {
+  const params = await props.params;
   const { userId, orgId } = await auth();
   if (!userId) return Response.json({ error: 'Unauthorized' }, { status: 401 });
   if (orgId !== params.orgId) return Response.json({ error: 'Forbidden' }, { status: 403 });

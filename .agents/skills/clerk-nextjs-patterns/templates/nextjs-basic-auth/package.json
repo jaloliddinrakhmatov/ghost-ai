@@ -1,16 +1,21 @@
 {
   "name": "clerk-nextjs",
   "private": true,
-  "scripts": { "dev": "next dev", "build": "next build" },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
   "dependencies": {
-    "next": "latest",
-    "react": "latest",
-    "react-dom": "latest",
-    "@clerk/nextjs": "latest"
+    "next": "15.3.2",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "@clerk/nextjs": "6.12.12"
   },
   "devDependencies": {
-    "typescript": "latest",
-    "@types/react": "latest",
-    "@types/react-dom": "latest"
+    "typescript": "5.8.3",
+    "@types/react": "19.1.4",
+    "@types/react-dom": "19.1.4"
   }
 }
