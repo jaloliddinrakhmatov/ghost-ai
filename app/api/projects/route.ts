@@ -18,12 +18,18 @@ export async function POST(req: NextRequest) {
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const idPattern = /^[a-z0-9-_]{3,64}$/;
   let name = "Untitled Project";
   let id: string | undefined;
   try {
     const body = await req.json();
     if (typeof body.name === "string" && body.name.trim()) name = body.name.trim();
-    if (typeof body.id === "string" && body.id.trim()) id = body.id.trim();
+    if (typeof body.id === "string" && body.id.trim()) {
+      const candidate = body.id.trim().toLowerCase();
+      if (!idPattern.test(candidate))
+        return NextResponse.json({ error: "Invalid project id" }, { status: 400 });
+      id = candidate;
+    }
   } catch {
     // no body — use defaults
   }

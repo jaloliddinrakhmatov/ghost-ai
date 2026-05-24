@@ -34,8 +34,8 @@ export function useProjectActions() {
   const [roomSuffix, setRoomSuffix] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const roomIdPreview =
-    formName.trim() ? `${toSlug(formName)}-${roomSuffix}` : "";
+  const baseSlug = toSlug(formName);
+  const roomIdPreview = baseSlug ? `${baseSlug}-${roomSuffix}` : "";
 
   function openCreate() {
     setFormName("");

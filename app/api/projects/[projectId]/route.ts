@@ -16,7 +16,12 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
   if (!project) return NextResponse.json({ error: "Not found" }, { status: 404 });
   if (project.ownerId !== userId) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const body = await req.json();
+  let body: { name?: unknown } = {};
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
   const name = typeof body.name === "string" && body.name.trim() ? body.name.trim() : undefined;
   if (!name) return NextResponse.json({ error: "name is required" }, { status: 400 });
 
