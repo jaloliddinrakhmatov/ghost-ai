@@ -1,5 +1,7 @@
 "use client";
 
+import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import type { NodeData } from "@/types/canvas";
 
 type Shape = NonNullable<NodeData["shape"]>;
@@ -96,7 +98,101 @@ export interface ShapeDragPayload {
 
 export const DRAG_TYPE = "application/ghost-shape";
 
+// Scale preview down to avoid being too large
+const PREVIEW_SCALE = 0.5;
+
+function ShapePreview({
+  shape,
+  width,
+  height,
+}: {
+  shape: Shape;
+  width: number;
+  height: number;
+}) {
+  const w = width * PREVIEW_SCALE;
+  const h = height * PREVIEW_SCALE;
+  const stroke = "var(--color-accent-primary)";
+  const fill = "var(--color-bg-elevated)";
+
+  if (shape === "diamond") {
+    const pts = `${w / 2},2 ${w - 2},${h / 2} ${w / 2},${h - 2} 2,${h / 2}`;
+    return (
+      <svg width={w} height={h} fill="none">
+        <polygon points={pts} fill={fill} stroke={stroke} strokeWidth={1.5} />
+      </svg>
+    );
+  }
+
+  if (shape === "hexagon") {
+    const cx = w / 2, cy = h / 2;
+    const rx = cx - 2, ry = cy - 2;
+    const pts = Array.from({ length: 6 }, (_, i) => {
+      const a = (Math.PI / 180) * (60 * i - 30);
+      return `${cx + rx * Math.cos(a)},${cy + ry * Math.sin(a)}`;
+    }).join(" ");
+    return (
+      <svg width={w} height={h} fill="none">
+        <polygon points={pts} fill={fill} stroke={stroke} strokeWidth={1.5} />
+      </svg>
+    );
+  }
+
+  if (shape === "cylinder") {
+    const ry = Math.max(4, h * 0.12);
+    return (
+      <svg width={w} height={h} fill="none">
+        <rect x={2} y={ry} width={w - 4} height={h - ry * 2} fill={fill} stroke="none" />
+        <line x1={2} y1={ry} x2={2} y2={h - ry} stroke={stroke} strokeWidth={1.5} />
+        <line x1={w - 2} y1={ry} x2={w - 2} y2={h - ry} stroke={stroke} strokeWidth={1.5} />
+        <ellipse cx={w / 2} cy={h - ry} rx={(w - 4) / 2} ry={ry} fill={fill} stroke={stroke} strokeWidth={1.5} />
+        <ellipse cx={w / 2} cy={ry} rx={(w - 4) / 2} ry={ry} fill={fill} stroke={stroke} strokeWidth={1.5} />
+      </svg>
+    );
+  }
+
+  // CSS shapes: rectangle, pill, circle
+  const radius = shape === "circle" || shape === "pill" ? "9999px" : "3px";
+  return (
+    <div
+      style={{
+        width: w,
+        height: h,
+        borderRadius: radius,
+        border: `1.5px solid ${stroke}`,
+        backgroundColor: fill,
+      }}
+    />
+  );
+}
+
+interface DragState {
+  shape: Shape;
+  defaultWidth: number;
+  defaultHeight: number;
+  x: number;
+  y: number;
+}
+
+// 1×1 transparent GIF used to suppress the browser's default drag image
+const TRANSPARENT_IMG =
+  typeof Image !== "undefined"
+    ? (() => {
+        const img = new Image();
+        img.src =
+          "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+        return img;
+      })()
+    : null;
+
 export function ShapePanel() {
+  const [drag, setDrag] = useState<DragState | null>(null);
+  const dragRef = useRef<DragState | null>(null);
+
+  useEffect(() => {
+    dragRef.current = drag;
+  }, [drag]);
+
   function handleDragStart(e: React.DragEvent, config: ShapeConfig) {
     const payload: ShapeDragPayload = {
       shape: config.shape,
@@ -105,23 +201,71 @@ export function ShapePanel() {
     };
     e.dataTransfer.setData(DRAG_TYPE, JSON.stringify(payload));
     e.dataTransfer.effectAllowed = "copy";
+
+    if (TRANSPARENT_IMG) {
+      e.dataTransfer.setDragImage(TRANSPARENT_IMG, 0, 0);
+    }
+
+    setDrag({
+      shape: config.shape,
+      defaultWidth: config.defaultWidth,
+      defaultHeight: config.defaultHeight,
+      x: e.clientX,
+      y: e.clientY,
+    });
+  }
+
+  function handleDrag(e: React.DragEvent) {
+    // clientX/Y are 0 when cursor leaves the viewport
+    if (e.clientX === 0 && e.clientY === 0) return;
+    setDrag((prev) => (prev ? { ...prev, x: e.clientX, y: e.clientY } : prev));
+  }
+
+  function handleDragEnd() {
+    setDrag(null);
   }
 
   return (
-    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1 px-3 py-2 rounded-full bg-bg-elevated border border-border-default shadow-lg">
-      {SHAPES.map((config) => (
-        <button
-          key={config.shape}
-          draggable
-          onDragStart={(e) => handleDragStart(e, config)}
-          onMouseDown={(e) => e.stopPropagation()}
-          title={config.label}
-          aria-label={`Drag ${config.label} shape`}
-          className="flex items-center justify-center w-8 h-8 rounded-full text-text-muted hover:text-text-default hover:bg-bg-subtle transition-colors cursor-grab active:cursor-grabbing"
-        >
-          {config.icon}
-        </button>
-      ))}
-    </div>
+    <>
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1 px-3 py-2 rounded-full bg-bg-elevated border border-border-default shadow-lg">
+        {SHAPES.map((config) => (
+          <button
+            key={config.shape}
+            draggable
+            onDragStart={(e) => handleDragStart(e, config)}
+            onDrag={handleDrag}
+            onDragEnd={handleDragEnd}
+            onMouseDown={(e) => e.stopPropagation()}
+            title={config.label}
+            aria-label={`Drag ${config.label} shape`}
+            className="flex items-center justify-center w-8 h-8 rounded-full text-text-muted hover:text-text-default hover:bg-bg-subtle transition-colors cursor-grab active:cursor-grabbing"
+          >
+            {config.icon}
+          </button>
+        ))}
+      </div>
+
+      {drag &&
+        createPortal(
+          <div
+            style={{
+              position: "fixed",
+              left: drag.x,
+              top: drag.y,
+              transform: "translate(-50%, -50%)",
+              pointerEvents: "none",
+              opacity: 0.7,
+              zIndex: 9999,
+            }}
+          >
+            <ShapePreview
+              shape={drag.shape}
+              width={drag.defaultWidth}
+              height={drag.defaultHeight}
+            />
+          </div>,
+          document.body
+        )}
+    </>
   );
 }

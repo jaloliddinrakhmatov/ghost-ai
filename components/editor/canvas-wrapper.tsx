@@ -1,23 +1,35 @@
 "use client";
 
-import { Component, ReactNode, useCallback } from "react";
-import { LiveblocksProvider, RoomProvider, ClientSideSuspense } from "@liveblocks/react";
+import { Component, ReactNode, useCallback, useEffect } from "react";
+import { LiveblocksProvider, RoomProvider, ClientSideSuspense, useHistory, useCanUndo, useCanRedo } from "@liveblocks/react";
 import {
   ReactFlow,
   Background,
-  MiniMap,
   BackgroundVariant,
   useReactFlow,
   ReactFlowProvider,
+  ConnectionMode,
+  MarkerType,
 } from "@xyflow/react";
 import { useLiveblocksFlow } from "@liveblocks/react-flow";
 import type { CanvasNode, CanvasEdge, NodeData } from "@/types/canvas";
+import type { CanvasTemplate } from "./starter-templates";
 import { ShapePanel, DRAG_TYPE, type ShapeDragPayload } from "./shape-panel";
 import { CanvasNodeRenderer } from "./canvas-node";
+import { CanvasEdgeRenderer } from "./canvas-edge";
+import { CanvasControlBar } from "./canvas-control-bar";
+import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 
 import "@xyflow/react/dist/style.css";
 
 const nodeTypes = { canvasNode: CanvasNodeRenderer };
+const edgeTypes = { canvasEdge: CanvasEdgeRenderer };
+
+const defaultEdgeOptions = {
+  type: "canvasEdge",
+  markerEnd: { type: MarkerType.ArrowClosed, width: 10, height: 10, color: "var(--color-border-default)" },
+  style: { strokeLinecap: "round" as const },
+};
 
 class LiveblocksErrorBoundary extends Component<
   { children: ReactNode },
@@ -43,7 +55,50 @@ class LiveblocksErrorBoundary extends Component<
 function CanvasInner() {
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect } =
     useLiveblocksFlow<CanvasNode, CanvasEdge>({ suspense: true });
-  const { screenToFlowPosition, setNodes } = useReactFlow<CanvasNode, CanvasEdge>();
+  const instance = useReactFlow<CanvasNode, CanvasEdge>();
+  const { screenToFlowPosition, setNodes, setEdges } = instance;
+  const history = useHistory();
+  const canUndo = useCanUndo();
+  const canRedo = useCanRedo();
+
+  useKeyboardShortcuts({ instance, undo: history.undo, redo: history.redo });
+
+  useEffect(() => {
+    function onLabelUpdate(e: Event) {
+      const { id, label } = (e as CustomEvent<{ id: string; label: string }>).detail;
+      setNodes((nds) =>
+        nds.map((n) => (n.id === id ? { ...n, data: { ...n.data, label } } : n))
+      );
+    }
+    function onColorUpdate(e: Event) {
+      const { id, color, textColor } = (e as CustomEvent<{ id: string; color: string; textColor: string }>).detail;
+      setNodes((nds) =>
+        nds.map((n) => (n.id === id ? { ...n, data: { ...n.data, color, textColor } } : n))
+      );
+    }
+    function onEdgeLabelUpdate(e: Event) {
+      const { id, label } = (e as CustomEvent<{ id: string; label: string }>).detail;
+      setEdges((eds) =>
+        eds.map((edge) => (edge.id === id ? { ...edge, data: { ...edge.data, label } } : edge))
+      );
+    }
+    function onLoadTemplate(e: Event) {
+      const { nodes: tNodes, edges: tEdges } = (e as CustomEvent<CanvasTemplate>).detail;
+      setNodes(tNodes);
+      setEdges(tEdges);
+      requestAnimationFrame(() => instance.fitView({ duration: 300 }));
+    }
+    document.addEventListener("node:label-update", onLabelUpdate);
+    document.addEventListener("node:color-update", onColorUpdate);
+    document.addEventListener("edge:label-update", onEdgeLabelUpdate);
+    document.addEventListener("canvas:load-template", onLoadTemplate);
+    return () => {
+      document.removeEventListener("node:label-update", onLabelUpdate);
+      document.removeEventListener("node:color-update", onColorUpdate);
+      document.removeEventListener("edge:label-update", onEdgeLabelUpdate);
+      document.removeEventListener("canvas:load-template", onLoadTemplate);
+    };
+  }, [setNodes, setEdges]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     if (e.dataTransfer.types.includes(DRAG_TYPE)) {
@@ -97,6 +152,9 @@ function CanvasInner() {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
+        defaultEdgeOptions={defaultEdgeOptions}
+        connectionMode={ConnectionMode.Loose}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
         fitView
@@ -104,12 +162,15 @@ function CanvasInner() {
         style={{ background: "transparent" }}
         proOptions={{ hideAttribution: false }}
       >
-        <MiniMap
-          className="!bg-bg-elevated !border-border-default"
-          maskColor="rgba(0,0,0,0.4)"
-        />
         <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#ffffff30" />
       </ReactFlow>
+      <CanvasControlBar
+        instance={instance}
+        canUndo={canUndo}
+        canRedo={canRedo}
+        onUndo={history.undo}
+        onRedo={history.redo}
+      />
       <ShapePanel />
     </div>
   );
