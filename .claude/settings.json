@@ -11,7 +11,14 @@
       "Bash(node -e \"const m = require\\('@liveblocks/client'\\); console.log\\(Object.keys\\(m\\).filter\\(k => k.includes\\('Liveblock'\\) || k.includes\\('create'\\)\\)\\)\")",
       "Bash(node -e \"const m = require\\('@liveblocks/react-flow'\\); const f = m.useLiveblocksFlow; console.log\\(f.toString\\(\\).slice\\(500, 1500\\)\\)\")",
       "Bash(node -e \"const m = require\\('@liveblocks/react-flow/dist/index.cjs'\\); console.log\\(Object.keys\\(m\\)\\)\")",
-      "Bash(node -e \"const m = require\\('@liveblocks/react/dist/index.cjs'\\); const f = m.ClientSideSuspense; console.log\\(f?.toString\\(\\).slice\\(0,200\\)\\)\")"
+      "Bash(node -e \"const m = require\\('@liveblocks/react/dist/index.cjs'\\); const f = m.ClientSideSuspense; console.log\\(f?.toString\\(\\).slice\\(0,200\\)\\)\")",
+      "Bash(node -e \"const b = require\\('/Users/ravshan/Desktop/ghost-ai/node_modules/@vercel/blob/dist/index.js'\\); console.log\\(Object.keys\\(b\\)\\)\")",
+      "Bash(node -e \"const b = require\\('/Users/ravshan/Desktop/ghost-ai/node_modules/@vercel/blob/dist/index.js'\\); console.log\\(Object.keys\\(b\\).filter\\(k => k.toLowerCase\\(\\).includes\\('download'\\) || k === 'put' || k === 'del' || k === 'get'\\)\\)\")",
+      "Bash(node -e ' *)",
+      "mcp__terminal-grid__get_grid_info",
+      "Bash(curl -s http://localhost:3000/api/projects/test123/canvas -I)",
+      "Bash(kill %1)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/api/projects/test/canvas)"
     ],
     "additionalDirectories": [
       "./app/editor",

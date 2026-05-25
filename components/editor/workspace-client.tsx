@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { Bot, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
+import type { SaveStatus } from "@/hooks/use-canvas-autosave";
 import { CanvasWrapper } from "@/components/editor/canvas-wrapper";
+import { AISidebar } from "@/components/editor/ai-sidebar";
 import { EditorNavbar } from "@/components/editor/editor-navbar";
 import { ProjectSidebar } from "@/components/editor/project-sidebar";
 import {
@@ -37,6 +38,15 @@ export function WorkspaceClient({
   const [aiOpen, setAiOpen] = useState(true);
   const [shareOpen, setShareOpen] = useState(false);
   const [templatesOpen, setTemplatesOpen] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
+
+  useEffect(() => {
+    function onSaveStatus(e: Event) {
+      setSaveStatus((e as CustomEvent<SaveStatus>).detail);
+    }
+    document.addEventListener("canvas:save-status", onSaveStatus);
+    return () => document.removeEventListener("canvas:save-status", onSaveStatus);
+  }, []);
 
   function handleImportTemplate(template: CanvasTemplate) {
     document.dispatchEvent(new CustomEvent("canvas:load-template", { detail: template }));
@@ -53,6 +63,9 @@ export function WorkspaceClient({
         isAiOpen={aiOpen}
         onAiToggle={() => setAiOpen((v) => !v)}
         onTemplates={() => setTemplatesOpen(true)}
+        saveStatus={saveStatus}
+        onSave={() => document.dispatchEvent(new CustomEvent("canvas:manual-save"))}
+        showUserButton={false}
       />
 
       {/* Body: canvas fills full space below navbar, sidebars float over it */}
@@ -76,46 +89,7 @@ export function WorkspaceClient({
         />
 
         {/* AI sidebar — floating panel, right side */}
-        <div
-          className={`absolute top-3 right-3 bottom-3 z-30 w-[300px] transition-transform duration-200 ease-in-out ${
-            aiOpen ? "translate-x-0" : "translate-x-[calc(100%+12px)]"
-          }`}
-        >
-          <aside className="flex flex-col h-full bg-bg-surface/95 backdrop-blur-sm border border-white/6 rounded-2xl shadow-2xl overflow-hidden">
-            <div className="flex items-start justify-between px-5 py-5 shrink-0">
-              <div>
-                <p className="text-sm font-semibold text-text-primary">AI Copilot</p>
-                <p className="text-xs text-text-muted mt-0.5">Placeholder panel</p>
-              </div>
-              <Sparkles className="h-4 w-4 text-accent-ai mt-0.5 shrink-0" />
-            </div>
-
-            <div className="flex-1 px-3 pb-3 overflow-y-auto space-y-2">
-              <div className="rounded-xl bg-bg-elevated/60 border border-white/5 p-4 flex gap-3">
-                <div className="w-8 h-8 rounded-lg bg-accent-ai/10 flex items-center justify-center shrink-0">
-                  <Bot className="h-4 w-4 text-accent-ai-text" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-text-primary">Chat surface pending</p>
-                  <p className="text-xs text-text-muted mt-1 leading-relaxed">
-                    The toggle is wired. Messaging and generation are intentionally out of scope here.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="px-3 pb-3 shrink-0">
-              <div className="rounded-xl bg-bg-elevated/60 border border-white/5 p-4">
-                <p className="text-xs tracking-[0.15em] uppercase text-text-faint font-medium mb-2">
-                  Future Hooks
-                </p>
-                <p className="text-xs text-text-muted leading-relaxed">
-                  Prompt composer, run status, and architecture guidance will attach to this sidebar.
-                </p>
-              </div>
-            </div>
-          </aside>
-        </div>
+        <AISidebar isOpen={aiOpen} onClose={() => setAiOpen(false)} />
       </div>
 
       <StarterTemplatesModal

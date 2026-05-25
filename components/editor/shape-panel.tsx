@@ -94,6 +94,8 @@ export interface ShapeDragPayload {
   shape: Shape;
   defaultWidth: number;
   defaultHeight: number;
+  offsetX: number;
+  offsetY: number;
 }
 
 export const DRAG_TYPE = "application/ghost-shape";
@@ -198,6 +200,8 @@ export function ShapePanel() {
       shape: config.shape,
       defaultWidth: config.defaultWidth,
       defaultHeight: config.defaultHeight,
+      offsetX: e.nativeEvent.offsetX,
+      offsetY: e.nativeEvent.offsetY,
     };
     e.dataTransfer.setData(DRAG_TYPE, JSON.stringify(payload));
     e.dataTransfer.effectAllowed = "copy";

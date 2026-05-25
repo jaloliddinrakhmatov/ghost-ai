@@ -87,9 +87,13 @@ const handleStyle: React.CSSProperties = {
 const HANDLES = (
   <>
     <Handle type="source" position={Position.Top} id="top" style={handleStyle} />
+    <Handle type="target" position={Position.Top} id="top-t" style={handleStyle} />
     <Handle type="source" position={Position.Right} id="right" style={handleStyle} />
+    <Handle type="target" position={Position.Right} id="right-t" style={handleStyle} />
     <Handle type="source" position={Position.Bottom} id="bottom" style={handleStyle} />
+    <Handle type="target" position={Position.Bottom} id="bottom-t" style={handleStyle} />
     <Handle type="source" position={Position.Left} id="left" style={handleStyle} />
+    <Handle type="target" position={Position.Left} id="left-t" style={handleStyle} />
   </>
 );
 
